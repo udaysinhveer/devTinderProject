@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { userAuth } = require("../middlewares/auth");
 
-router.get("/profile",userAuth, async (req, res) => {
+router.get("/profile/view",userAuth, async (req, res) => {
 
     const user = req.user
 
@@ -11,6 +11,9 @@ router.get("/profile",userAuth, async (req, res) => {
         throw new Error("user does not exist")
     }
     res.send(user);
-})
+});
 
+router.patch("/profile/edit", userAuth, async (req, res)=>{
+    
+})
 module.exports = router
