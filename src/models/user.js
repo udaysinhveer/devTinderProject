@@ -9,6 +9,7 @@ const userSchema = mongoose.Schema({
         required: true,
         minlength: 3,
         maxlength: 50,
+        index:true // Creates a normal index (speeds up search/sort on this field).
     },
     lastName: {
         type: String,
@@ -16,7 +17,7 @@ const userSchema = mongoose.Schema({
     emailId: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, //Creates a unique index — ensures no two documents can have the same value.
         lowercase: true,
         trim: true,
         validate(value) {
