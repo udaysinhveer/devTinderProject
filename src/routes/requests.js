@@ -21,7 +21,7 @@ router.post("/request/send/:status/:toUserId",
 
             const toUser = await User.findById(toUserId);
             if (!toUser) {
-                return res.status(404).json({Message:"Invalid connection request, user not found"})
+                return res.status(404).json({ Message: "Invalid connection request, user not found" })
             }
 
             // If there is an existing connection request or not 
@@ -34,7 +34,7 @@ router.post("/request/send/:status/:toUserId",
             });
             if (existingConnectionRequest) {
                 return res
-                .status(400).send({message:"Connection request already exist"})
+                    .status(400).send({ message: "Connection request already exist" })
             }
 
             const connectionRequest = new ConnectionRequest({
@@ -55,5 +55,45 @@ router.post("/request/send/:status/:toUserId",
         }
 
     });
+
+
+router.post(
+    "/request/review/:status/:requestId",
+    userAuth,
+    async (req, res) => {
+        try {
+            const loggedInUser = req.user;
+            const { status, requestId } = req.params;
+
+            const allowedStatus = ["accepted", "rejected"];
+
+            if (!allowedStatus.includes(status)) {
+                return res.status(400).json({ message: "Status not allowed!" })
+            }
+
+            const connectionRequest = await ConnectionRequest.findOne({
+                _id: requestId,
+                toUserId: loggedInUser._id,
+                status: "interested",
+            });
+            console.log(connectionRequest);
+
+            console.log(requestId, loggedInUser._id, status);
+
+
+            if (!connectionRequest) {
+                return res
+                    .status(404)
+                    .json({ message: "Connection request not found" });
+            }
+
+            connectionRequest.status = status;
+            const data = await connectionRequest.save();
+            res.json({ message: "Connection request " + status, data })
+        } catch (err) {
+            res.status(400).send("Error: " + err.message)
+        }
+    }
+)
 
 module.exports = router
